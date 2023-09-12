@@ -1,7 +1,7 @@
 use ncurses::CURSOR_VISIBILITY::CURSOR_INVISIBLE;
 use ncurses::{COLOR_BLACK, COLOR_RED, COLOR_WHITE, COLOR_GREEN, COLOR_BLUE, COLOR_CYAN, COLOR_MAGENTA, COLOR_YELLOW};
-use crate::{NCURSES_GETCH_TIMOUT,BOARD_HEIGHT,BOARD_WIDTH};
-
+use crate::{NCURSES_GETCH_TIMOUT};
+use crate::board::Board;
 pub fn init_ncurses() {
     ncurses::initscr();
     ncurses::cbreak();
@@ -55,20 +55,17 @@ pub fn draw_next(next_window: ncurses::WINDOW, next_piece: &[&[u8]]) {
     draw_piece(next_window, next_piece,1, 0);
 }
 
-pub fn draw_board(w: ncurses::WINDOW, board: &[[u8;BOARD_WIDTH];BOARD_HEIGHT]){
-    let nr = board.len();
-    let nc = board[0].len();
+pub fn draw_board(w: ncurses::WINDOW, board: &Board){
     ncurses::werase(w);
     ncurses::box_(w, 0, 0);
-    for i in 0..nr {
+    for i in 0..board.height() {
         ncurses::wmove(w, (i+1) as i32, 1);
-        for j in 0..nc {
-            if board[i][j] > 0 {
-                draw_block(w, board[i][j] as i16);
+        for j in 0..board.width() {
+            if board.data[i][j] > 0 {
+                draw_block(w, board.data[i][j] as i16);
                 
             } else{
                 ncurses::wmove(w,(i+1) as i32, 3+2*j as i32);
-                //clear_block(w);
             }
         }
     }
