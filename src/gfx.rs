@@ -1,6 +1,6 @@
 use ncurses::CURSOR_VISIBILITY::CURSOR_INVISIBLE;
 use ncurses::{COLOR_BLACK, COLOR_RED, COLOR_WHITE, COLOR_GREEN, COLOR_BLUE, COLOR_CYAN, COLOR_MAGENTA, COLOR_YELLOW};
-use crate::{NCURSES_GETCH_TIMOUT};
+use crate::{NCURSES_GETCH_TIMOUT, GameState};
 use crate::board::Board;
 pub fn init_ncurses() {
     ncurses::initscr();
@@ -54,7 +54,30 @@ pub fn draw_next(next_window: ncurses::WINDOW, next_piece: &[&[u8]]) {
     ncurses::wnoutrefresh(next_window);
     draw_piece(next_window, next_piece,1, 0);
 }
+pub fn draw_score_win(w: ncurses::WINDOW, gs: &GameState) {
+    let score_str = &gs.score.to_string();
+    let score_pos = 10 - score_str.len() as i32;
+    let rc_str    = &gs.rows_cleared.to_string();
+    let rc_pos    = 10 - rc_str.len() as i32;
+    let lvl_str   = &gs.level.to_string();
+    let lvl_pos   = 10 - lvl_str.len() as i32;
+    ncurses::wmove(w, 0, 0);
+    ncurses::waddstr(w, "Level:");
+    ncurses::wmove(w, 0, lvl_pos);
+    ncurses::waddstr(w, lvl_str);
 
+    ncurses::wmove(w, 1, 0);
+    ncurses::waddstr(w, "Score: ");
+    ncurses::wmove(w, 2,score_pos);
+    ncurses::waddstr(w, score_str);
+    
+    ncurses::wmove(w, 3,0);
+    ncurses::waddstr(w, "Cleared: ");
+    ncurses::wmove(w, 4,rc_pos);
+    ncurses::waddstr(w, rc_str);
+    
+    ncurses::wnoutrefresh(w);
+}
 pub fn draw_board(w: ncurses::WINDOW, board: &Board){
     ncurses::werase(w);
     ncurses::box_(w, 0, 0);

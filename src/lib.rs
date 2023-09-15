@@ -42,6 +42,11 @@ pub const T_PIECE: &[&[&[u8]]] = &[
 
 pub const PIECES: &[&[&[&[u8]]]] = &[I_PIECE,J_PIECE,L_PIECE,O_PIECE,S_PIECE,Z_PIECE,T_PIECE];
 
+pub struct GameState {
+    pub score: i32,
+    pub rows_cleared: i32,
+    pub level: i32,
+}
 
 pub fn gen_piece<'a>(pieces: &'a[&'a[&'a[&'a[u8]]]]) -> &'a[&'a[&'a[u8]]] {
     pieces[rand::random::<usize>()%PIECES.len()]

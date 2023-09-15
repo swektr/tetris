@@ -37,12 +37,15 @@ impl Board {
                                   .all(|(dx, _)| self.at_yx(y+dy as i32, x+dx as i32)
                                                      .is_some_and(|val| val == 0)))
     }
-    pub fn clear_rows(&mut self){
+    pub fn clear_rows(&mut self) -> i32{
+        let mut n_cleared = 0; 
         for y in (1..self.data.len()).rev() {
             while self.data[y].iter().all(|cv| *cv > 0){
                 self.shift_down(y);
+                n_cleared += 1;
             }
         }
+        n_cleared
     }
     
     fn shift_down(&mut self, into_row: usize) {
