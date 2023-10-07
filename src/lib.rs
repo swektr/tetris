@@ -51,3 +51,16 @@ pub struct GameState {
 pub fn gen_piece<'a>(pieces: &'a[&'a[&'a[&'a[u8]]]]) -> &'a[&'a[&'a[u8]]] {
     pieces[rand::random::<usize>()%PIECES.len()]
 }
+
+pub fn pause_capture_quit() -> bool {
+    ncurses::timeout(-1);
+    let propagate_quit = loop {
+        match ncurses::getch() {
+            113 => break true,
+            112 => break false,
+            _   => (),
+        }
+    };
+    ncurses::timeout(NCURSES_GETCH_TIMOUT);
+    propagate_quit
+}

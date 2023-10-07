@@ -6,14 +6,14 @@ use gfx;
 fn main() {
     let mut board = Board::new();
     gfx::init_ncurses();
-
     ctrlc::set_handler(|| {
         ncurses::endwin();
         exit(0)
     }).expect("could not set Ctrl-C handler");
-    let game_window = gfx::newwin(BOARD_HEIGHT+2, 2*BOARD_WIDTH+2, 0, 0);
-    let next_window = gfx::newwin(6, 2*BOARD_WIDTH+2,0, 2*BOARD_WIDTH+2);
-    let score_window = gfx::newwin(6, 10, 8, 2*BOARD_WIDTH+2);
+
+    let game_window  = gfx::newwin(BOARD_HEIGHT+2, 2*BOARD_WIDTH+2, 0, 0);
+    let next_window  = gfx::newwin(6, 10,0, 2*BOARD_WIDTH+2);
+    let score_window = gfx::newwin(6, 13, 8, 2*BOARD_WIDTH+2);
     
     let mut curr_piece = gen_piece(PIECES);
     let mut next_piece = gen_piece(PIECES);
@@ -96,7 +96,12 @@ fn main() {
                     16
                 }
             },
-            /* q */ 113 => break, 
+            /* (p)ause */ 112 => {
+                gfx::draw_pause_screen(game_window);
+                gfx::doupdate();
+                if pause_capture_quit() { break }
+            },
+            /* (q)uit  */ 113 => break,
             _ => (),
         };
         tick.join().unwrap();
