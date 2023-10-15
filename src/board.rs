@@ -20,23 +20,26 @@ impl Board {
         self.height
     }
 
-    pub fn at_yx(&self, y: i32, x: i32) -> Option<u8> {
+    pub fn check_collision(&self, piece: &[&[u8]], y: i32, x: i32) -> bool {
+        fn check_row(board: &Board, row: &[u8], y:i32 , x:i32 , py: usize) -> bool {
+            row.iter()
+               .enumerate()
+               .filter(|(_,&cell)| cell > 0 ) // only non-zero cells can collide
+               .any(|(px,_)| !board.at_yx(y+py as i32, x+px as i32)
+                                   .is_some_and(|cell| cell == 0))
+        }
+        piece.iter()
+             .enumerate()
+             .any(|(py, row)| check_row(self, row, y, x, py))
+    }
+
+    fn at_yx(&self, y: i32, x: i32) -> Option<u8> {
         match 0 <= y && y < self.height as i32 && 0 <= x && x < self.width as i32 {
             true  => Some(self.data[y as usize][x as usize]),
             false => None,
         }
     }
 
-    pub fn check_collision(&self, piece: &[&[u8]], y: i32, x: i32) -> bool {
-        // This is confusing and stupid. technically its "purely functional" 
-        !piece.iter()
-              .enumerate()
-              .all(|(dy, row)| row.iter() 
-                                  .enumerate()
-                                  .filter(|(_, &cell)| cell > 0)
-                                  .all(|(dx, _)| self.at_yx(y+dy as i32, x+dx as i32)
-                                                     .is_some_and(|val| val == 0)))
-    }
     pub fn clear_rows(&mut self) -> i32{
         let mut n_cleared = 0; 
         for y in (1..self.data.len()).rev() {
