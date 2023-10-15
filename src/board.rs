@@ -1,3 +1,5 @@
+use crate::piece::{PieceState, PieceStateImpl};
+
 pub const BOARD_WIDTH:  usize = 10;
 pub const BOARD_HEIGHT: usize = 20;
 pub struct Board {
@@ -20,20 +22,21 @@ impl Board {
         self.height
     }
 
-    pub fn check_collision(&self, piece: &[&[u8]], y: i32, x: i32) -> bool {
+    pub fn check_collision(&self, piece: PieceState, y: i32, x: i32) -> bool {
         fn check_row(board: &Board, row: &[u8], y:i32 , x:i32 , py: usize) -> bool {
             row.iter()
                .enumerate()
                .filter(|(_,&cell)| cell > 0 ) // only non-zero cells can collide
-               .any(|(px,_)| !board.at_yx(y+py as i32, x+px as i32)
+               .any(|(px,_)| !board.at(y+py as i32, x+px as i32)
                                    .is_some_and(|cell| cell == 0))
         }
-        piece.iter()
+        piece.inner()
+             .iter()
              .enumerate()
              .any(|(py, row)| check_row(self, row, y, x, py))
     }
 
-    fn at_yx(&self, y: i32, x: i32) -> Option<u8> {
+    pub fn at(&self, y: i32, x: i32) -> Option<u8> {
         match 0 <= y && y < self.height as i32 && 0 <= x && x < self.width as i32 {
             true  => Some(self.data[y as usize][x as usize]),
             false => None,
@@ -60,8 +63,8 @@ impl Board {
         self.data[0].iter_mut().for_each(|cell| *cell = 0);
     }
 
-    pub fn place_piece(&mut self, piece: &[&[u8]], y: usize, x: usize) {
-        for (dy, row) in piece.iter().enumerate() {
+    pub fn place_piece(&mut self, piece: PieceState, y: usize, x: usize) {
+        for (dy, row) in piece.inner().iter().enumerate() {
             for (dx, &val) in row.iter().enumerate()
                                         .filter(|(_,val)| **val > 0) {
                 self.data[y+dy][x+dx] = val;

@@ -1,5 +1,6 @@
 use ncurses::CURSOR_VISIBILITY::CURSOR_INVISIBLE;
 use ncurses::{COLOR_BLACK, COLOR_RED, COLOR_WHITE, COLOR_GREEN, COLOR_BLUE, COLOR_CYAN, COLOR_MAGENTA, COLOR_YELLOW};
+use crate::piece::{PieceState, PieceStateImpl};
 use crate::{NCURSES_GETCH_TIMOUT, GameState};
 use crate::board::{Board, BOARD_HEIGHT, BOARD_WIDTH};
 pub fn init_ncurses() {
@@ -26,9 +27,9 @@ pub fn draw_block(w: ncurses::WINDOW, color: i16){
     ncurses::waddch(w, ' ' as u32 | ncurses::COLOR_PAIR(color));
 }
 
-pub fn draw_piece(w: ncurses::WINDOW, piece: &[&[u8]], y: i32,  x: i32) {
-    let height = piece.len() as i32;
-    let width = piece[0].len() as i32 * 2; // Blocks are 2 chars wide
+pub fn draw_piece(w: ncurses::WINDOW, piece: PieceState, y: i32,  x: i32) {
+    let height = piece.height() as i32;
+    let width = piece.width() as i32 * 2; // Blocks are 2 chars wide
     // convert cords to ncurses window dimension; 
     let y = y+1;
     let x = 2*x+1;
@@ -37,15 +38,15 @@ pub fn draw_piece(w: ncurses::WINDOW, piece: &[&[u8]], y: i32,  x: i32) {
             let (piece_y, board_y) = y;
             let (piece_x, board_x) = x;
             ncurses::wmove(w, board_y, board_x);
-            if piece[piece_y][piece_x] > 0 {
-                draw_block(w, piece[piece_y][piece_x] as i16);
+            if piece.at(piece_y, piece_x) > 0 {
+                draw_block(w, piece.at(piece_y, piece_x) as i16);
             }
         }
     }
     ncurses::wnoutrefresh(w);
 }
 
-pub fn draw_next(next_window: ncurses::WINDOW, next_piece: &[&[u8]]) {
+pub fn draw_next(next_window: ncurses::WINDOW, next_piece: PieceState) {
     ncurses::werase(next_window);
     ncurses::box_(next_window, 0, 0);
     ncurses::waddstr(next_window, "next:" );

@@ -2,11 +2,12 @@ use std::time::Duration;
 
 pub mod gfx;
 pub mod board;
-
+pub mod piece;
 pub const TICKS_PER_SECOND: i32 = 60;
 pub const NCURSES_GETCH_TIMOUT: i32 = 1000/TICKS_PER_SECOND as i32;
 pub const TICK_DUR_MILLIS: Duration = Duration::from_millis(NCURSES_GETCH_TIMOUT as u64);
 
+/*
 pub const I_PIECE: &[&[&[u8]]] = &[ 
     &[&[1,1,1,1]],
     &[&[1],&[1],&[1],&[1]]];
@@ -41,6 +42,7 @@ pub const T_PIECE: &[&[&[u8]]] = &[
     &[&[0,7]  , &[7,7]   , &[0,7]]];
 
 pub const PIECES: &[&[&[&[u8]]]] = &[I_PIECE,J_PIECE,L_PIECE,O_PIECE,S_PIECE,Z_PIECE,T_PIECE];
+*/
 
 pub struct GameState {
     pub score: i32,
@@ -48,9 +50,11 @@ pub struct GameState {
     pub level: i32,
 }
 
+/*
 pub fn gen_piece<'a>(pieces: &'a[&'a[&'a[&'a[u8]]]]) -> &'a[&'a[&'a[u8]]] {
     pieces[rand::random::<usize>()%PIECES.len()]
 }
+*/
 
 pub fn pause_capture_quit() -> bool {
     ncurses::timeout(-1);
